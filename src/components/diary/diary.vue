@@ -1,5 +1,18 @@
 <template>
   <div class="diary">
+    <div class="choose-month" v-on:click="showMonth"></div>
+    <div v-show="showMonthes">
+      <ul style="margin-top: 60px">
+        <li class="choose-month-item" @click="chooseMonth('2017-01')">2017-01</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-02')">2017-02</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-03')">2017-03</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-04')">2017-04</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-05')">2017-05</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-06')">2017-06</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-07')">2017-07</li>
+        <li class="choose-month-item" @click="chooseMonth('2017-08')">2017-08</li>
+      </ul>
+    </div>
     <div class="diary-month" v-on:click="showMonthList">
       <v-diaryheader v-bind:monthdetail="month_obj" v-bind:showday="showDay"></v-diaryheader>
     </div>
@@ -43,6 +56,7 @@
         diary_list: [],
         month_obj: {},
         showDay: true,
+        showMonthes: false,
         showLogIn: false
       }
     },
@@ -50,12 +64,12 @@
       let curDate = new Date()
       let month = curDate.getMonth() + 1 < 10 ? '0' + (curDate.getMonth() + 1) : '' + (curDate.getMonth() + 1)
       let curMonth = String(curDate.getFullYear()) + '-' + month
-      curMonth = '2017-03'
+//      curMonth = '2017-03'
       this.$http.get('http://106.14.187.88:7777/api/v1.0/get/record', {params: {'month': curMonth}}).then((data) => {
-        console.log(data.body.response)
         // this: vue实例
         this.diary_list = data.body.response.detail
         this.month_obj = data.body.response
+        console.log(this.month_obj)
       })
     },
     methods: {
@@ -65,6 +79,20 @@
       },
       showMonthList () {
         this.showDay = !this.showDay
+      },
+      showMonth () {
+        this.showDay = false
+        this.showMonthes = !this.showMonthes
+      },
+      chooseMonth (date) {
+        this.showDay = true
+        this.showMonthes = false
+        this.$http.get('http://106.14.187.88:7777/api/v1.0/get/record', {params: {'month': date}}).then((data) => {
+          // this: vue实例
+          this.diary_list = data.body.response.detail
+          this.month_obj = data.body.response
+          console.log(this.month_obj)
+        })
       }
     },
     components: {
@@ -76,6 +104,26 @@
 
 <style lang="less">
   @import "../../common/mixin/mixin";
+
+  .choose-month {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    background-color: transparent;
+    z-index: 10000;
+  }
+
+  .choose-month-item {
+    width: 150px;
+    font-size: 30px;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: #919191;
+    border-bottom: 1px solid #b9bdc2;
+    border-right: 1px solid #b9bdc2;
+    text-align: center;
+  }
 
   .diary-month {
     height: 60px;
