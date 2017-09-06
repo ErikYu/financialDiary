@@ -42,8 +42,6 @@
   import diaryheader from '../../components/diaryheader/diaryheader'
   import detailline from '../../components/detailline/detailline'
   import datePicker from 'vue-bootstrap-datetimepicker'
-  import 'bootstrap/dist/css/bootstrap.css'
-  import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
   import moment from 'moment'
   export default {
     name: 'diary',
@@ -122,8 +120,10 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   @import "../../common/mixin/mixin";
+  @import '../../../node_modules/bootstrap/dist/css/bootstrap.css';
+  @import '../../../node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
 
   .choose-month {
     position: fixed;

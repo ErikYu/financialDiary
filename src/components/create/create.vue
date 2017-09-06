@@ -183,6 +183,7 @@
             alert('登陆失败')
           } else {
             localStorage.session_id = res.body.response.token
+            this.showLogIn = false
           }
         }, (res) => {
           console.log('fail')
