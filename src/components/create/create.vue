@@ -92,7 +92,19 @@
       if (!localStorage.session_id) {
         this.showLogIn = true
       } else {
-        this.showLogIn = false
+        // 验证session_id有效性
+        this.$http.post('http://106.14.187.88:7777/api/v1.0/verify/token', {
+          token: localStorage.session_id
+        }, {
+          emulateJSON: true
+        }).then((res) => {
+          console.log(res.body.response)
+          if (res.body.response.confirmed) {
+            this.showLogIn = false
+          } else {
+            this.showLogIn = true
+          }
+        })
       }
       /**
        * Mock.Random生成随机数据，拦截ajax

@@ -1,17 +1,9 @@
 <template>
   <div class="diary">
-    <div class="choose-month" v-on:click="showMonth"></div>
+    <div class="choose-month" v-on:click="showMonth">
+      <v-date-picker style="opacity: 0;" v-model="chosenMonth" :config="monthConfig"></v-date-picker>
+    </div>
     <div v-show="showMonthes">
-      <ul style="margin-top: 60px">
-        <li class="choose-month-item" @click="chooseMonth('2017-01')">2017-01</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-02')">2017-02</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-03')">2017-03</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-04')">2017-04</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-05')">2017-05</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-06')">2017-06</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-07')">2017-07</li>
-        <li class="choose-month-item" @click="chooseMonth('2017-08')">2017-08</li>
-      </ul>
     </div>
     <div class="diary-month" v-on:click="showMonthList">
       <v-diaryheader v-bind:monthdetail="month_obj" v-bind:showday="showDay"></v-diaryheader>
@@ -49,6 +41,10 @@
 <script>
   import diaryheader from '../../components/diaryheader/diaryheader'
   import detailline from '../../components/detailline/detailline'
+  import datePicker from 'vue-bootstrap-datetimepicker'
+  import 'bootstrap/dist/css/bootstrap.css'
+  import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
+  import moment from 'moment'
   export default {
     name: 'diary',
     data () {
@@ -57,6 +53,11 @@
         month_obj: {},
         showDay: true,
         showMonthes: false,
+        monthConfig: {
+          viewMode: 'months',
+          format: 'YYYY-MM'
+        },
+        chosenMonth: '',
         showLogIn: false
       }
     },
@@ -72,6 +73,23 @@
         console.log(this.month_obj)
       })
     },
+    watch: {
+      chosenMonth (val, oldVal) {
+        let newMonth = moment(val).format('YYYY-MM')
+        let oldMonth = moment(oldVal).format('YYYY-MM')
+        if (newMonth !== oldMonth && oldVal) {
+          console.log('yunxing ')
+          this.showDay = true
+          this.showMonthes = false
+          this.$http.get('http://106.14.187.88:7777/api/v1.0/get/record', {params: {'month': newMonth}}).then((data) => {
+            // this: vue实例
+            this.diary_list = data.body.response.detail
+            this.month_obj = data.body.response
+            console.log(this.month_obj)
+          })
+        }
+      }
+    },
     methods: {
       get_day (date) {
         const weekDay = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -85,6 +103,7 @@
         this.showMonthes = !this.showMonthes
       },
       chooseMonth (date) {
+        console.log(moment(date).format('YYYY-MM'))
         this.showDay = true
         this.showMonthes = false
         this.$http.get('http://106.14.187.88:7777/api/v1.0/get/record', {params: {'month': date}}).then((data) => {
@@ -97,7 +116,8 @@
     },
     components: {
       'v-detail': detailline,
-      'v-diaryheader': diaryheader
+      'v-diaryheader': diaryheader,
+      'v-date-picker': datePicker
     }
   }
 </script>
